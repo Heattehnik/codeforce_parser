@@ -15,7 +15,7 @@ def get_problems():
             'index': problems['result']['problems'][i]['index'],
             'title': problems['result']['problems'][i]['name'],
             'type': problems['result']['problems'][i]['type'],
-            'points': problems['result']['problems'][i].get('points'),
+            'rating': problems['result']['problems'][i].get('rating'),
             'tags': problems['result']['problems'][i]['tags'],
             'solvedCount': problems['result']['problemStatistics'][i]['solvedCount']
         }
@@ -27,16 +27,20 @@ def get_problems():
 def problems_to_db(args):
     for problem in args:
         new_tags = Theme.objects.filter(theme__in=problem.get('tags')) # Новые значения тегов
-        create_ = Problem.objects.create(
-                    contest_id=problem.get('contest_id'),
-                    index=problem.get('index'),
-                    title=problem.get('title'),
-                    difficulty=problem.get('points'),
-                    solve_count=problem.get('solvedCount')
-                    )
+        if not Problem.objects.filter(
+                contest_id=problem.get('contest_id'),
+                index=problem.get('index')
+                ).exists():
+            create_ = Problem.objects.create(
+                        contest_id=problem.get('contest_id'),
+                        index=problem.get('index'),
+                        title=problem.get('title'),
+                        difficulty=problem.get('rating'),
+                        solve_count=problem.get('solvedCount')
+                        )
 
-        create_.theme.set(new_tags)  # Используйте метод set() для установки новых значений
-        create_.save()
+            create_.theme.set(new_tags)  # Используйте метод set() для установки новых значений
+            create_.save()
 
 
 def get_themes():
