@@ -30,6 +30,8 @@ class Command(BaseCommand):
         def get_problems(message, problems_set):
             filtered_problems = problems_set.filter(difficulty=message.text)[:10]
             for problem in filtered_problems:
-                bot.send_message(message.chat.id, problem.title)
+                bot.send_message(message.chat.id,
+                                 f'{problem.title}\n '
+                                 f'https://codeforces.com/problemset/problem/{problem.contest_id}/{problem.index}')
 
         bot.polling()
